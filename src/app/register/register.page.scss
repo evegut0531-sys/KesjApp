@@ -1,59 +1,184 @@
-.auth-content {
-  --background: var(--ion-color-light, #f4f5f8);
+.register-content {
+  --background: #ffffff;
 }
 
-.auth-container {
+.register-wrapper {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   min-height: 100%;
-  padding: 1rem 0;
+  justify-content: center;
 }
 
-.auth-card {
-  width: 100%;
-  max-width: 460px;
-  border-radius: 18px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  margin: auto;
+/* Top Icon Badge */
+.top-badge-wrapper {
+  margin-bottom: 1.25rem;
 }
 
-.auth-icon-wrapper {
-  margin-bottom: 0.5rem;
+.top-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #fde8ef;
+  border: 2px solid #f8bbd0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(233, 30, 99, 0.12);
 }
 
-.auth-icon {
-  font-size: 4rem;
+.badge-icon {
+  font-size: 32px;
+  color: #e91e63;
 }
 
-.custom-item {
-  --border-radius: 10px;
-  --background: var(--ion-color-light-shade, #e9ecef);
-  margin-top: 0.75rem;
-  margin-bottom: 0.25rem;
+/* Header Text */
+.header-text {
+  margin-bottom: 1.75rem;
+
+  .app-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1a1e28;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  .app-subtitle {
+    font-size: 0.95rem;
+    color: #7a8290;
+    margin: 0.35rem 0 0 0;
+    font-weight: 400;
+  }
 }
 
-.error-message {
-  color: var(--ion-color-danger, #eb445a);
-  font-size: 0.8rem;
-  padding-left: 0.5rem;
-  margin-bottom: 0.5rem;
+/* Form Styles */
+.register-form {
+  display: flex;
+  flex-direction: column;
 }
 
-.action-btn {
-  --border-radius: 10px;
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.88rem;
   font-weight: 600;
-  height: 48px;
-  margin-top: 1.25rem;
+  color: #4b5262;
+  margin-bottom: 0.45rem;
 }
 
-.sub-action-btn {
-  --border-radius: 10px;
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f4f6fa;
+  border: 1.5px solid #edf0f6;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: #f06292;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+  }
+}
+
+.custom-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: #1a1e28;
+
+  &::placeholder {
+    color: #a0a7b5;
+    font-weight: 400;
+  }
+
+  &.with-icon {
+    padding-right: 48px;
+  }
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a8290;
+  font-size: 1.25rem;
+  cursor: pointer;
+
+  &:hover {
+    color: #e91e63;
+  }
+}
+
+.field-error {
+  color: #e91e63;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+  padding-left: 0.25rem;
   font-weight: 500;
 }
 
-.auth-footer p {
-  color: var(--ion-color-medium, #92949c);
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  height: 50px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #ff4081 0%, #e91e63 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(233, 30, 99, 0.32);
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(233, 30, 99, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+/* Login Prompt */
+.login-prompt {
+  margin: 1.5rem 0 1rem 0;
   font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  color: #737c89;
+
+  .login-link {
+    color: #e91e63;
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

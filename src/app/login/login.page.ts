@@ -12,6 +12,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
+  phoneForm!: FormGroup;
+  activeTab: 'email' | 'phone' = 'email';
   showPassword = false;
 
   constructor(
@@ -27,6 +29,14 @@ export class LoginPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+
+    this.phoneForm = this.fb.group({
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9+ ]{7,15}$/)]],
+    });
+  }
+
+  setTab(tab: 'email' | 'phone') {
+    this.activeTab = tab;
   }
 
   toggleShowPassword() {
@@ -34,27 +44,39 @@ export class LoginPage implements OnInit {
   }
 
   async onLogin() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
+    if (this.activeTab === 'email') {
+      if (this.loginForm.invalid) {
+        this.loginForm.markAllAsTouched();
+        return;
+      }
 
-    const { email, password } = this.loginForm.value;
-    const loading = await this.loadingController.create({
-      message: 'Iniciando sesión...',
-      spinner: 'crescent',
-    });
-    await loading.present();
+      const { email, password } = this.loginForm.value;
+      const loading = await this.loadingController.create({
+        message: 'Iniciando sesión...',
+        spinner: 'crescent',
+      });
+      await loading.present();
 
-    try {
-      await this.authService.login(email, password);
-      await loading.dismiss();
-      this.showToast('¡Bienvenido de nuevo!', 'success');
-      this.router.navigateByUrl('/home', { replaceUrl: true });
-    } catch (error: any) {
-      await loading.dismiss();
-      this.showToast(this.getErrorMessage(error?.code), 'danger');
+      try {
+        await this.authService.login(email, password);
+        await loading.dismiss();
+        this.showToast('¡Bienvenido de nuevo!', 'success');
+        this.router.navigateByUrl('/home', { replaceUrl: true });
+      } catch (error: any) {
+        await loading.dismiss();
+        this.showToast(this.getErrorMessage(error?.code), 'danger');
+      }
+    } else {
+      if (this.phoneForm.invalid) {
+        this.phoneForm.markAllAsTouched();
+        return;
+      }
+      this.showToast('El inicio con teléfono estará disponible próximamente.', 'warning');
     }
+  }
+
+  continueAsGuest() {
+    this.router.navigateByUrl('/home');
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning') {

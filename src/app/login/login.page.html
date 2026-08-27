@@ -1,69 +1,127 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Iniciar Sesión</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-wrapper">
+    <!-- Icono superior -->
+    <div class="top-badge-wrapper ion-text-center">
+      <div class="top-badge">
+        <ion-icon name="sparkles-outline" class="badge-icon"></ion-icon>
+      </div>
+    </div>
 
-<ion-content [fullscreen]="true" class="ion-padding auth-content">
-  <div class="auth-container">
-    <ion-card class="auth-card">
-      <ion-card-header class="ion-text-center">
-        <div class="auth-icon-wrapper">
-          <ion-icon name="person-circle-outline" color="primary" class="auth-icon"></ion-icon>
+    <!-- Título y Subtítulo -->
+    <div class="header-text ion-text-center">
+      <h1 class="app-title">KesjApp</h1>
+      <p class="app-subtitle">Organiza tu vida diaria</p>
+    </div>
+
+    <!-- Pestañas: Correo / Teléfono -->
+    <div class="tabs-container">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'email'"
+        (click)="setTab('email')">
+        <ion-icon name="mail-outline"></ion-icon>
+        <span>Correo</span>
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab === 'phone'"
+        (click)="setTab('phone')">
+        <ion-icon name="call-outline"></ion-icon>
+        <span>Teléfono</span>
+      </button>
+    </div>
+
+    <!-- Formulario de Correo y Contraseña -->
+    <form *ngIf="activeTab === 'email'" [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label class="field-label">Correo electrónico</label>
+        <div class="input-container">
+          <input
+            type="email"
+            class="custom-input"
+            placeholder="tu@email.com"
+            formControlName="email"
+          />
         </div>
-        <ion-card-title>¡Bienvenido!</ion-card-title>
-        <ion-card-subtitle>Ingresa tus credenciales para continuar</ion-card-subtitle>
-      </ion-card-header>
-
-      <ion-card-content>
-        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-          <ion-item lines="inset" class="custom-item">
-            <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
-            <ion-input
-              type="email"
-              label="Correo Electrónico"
-              labelPlacement="floating"
-              placeholder="ejemplo@correo.com"
-              formControlName="email">
-            </ion-input>
-          </ion-item>
-          <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error-message">
-            <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo es obligatorio.</span>
-            <span *ngIf="loginForm.get('email')?.errors?.['email']">Ingresa un correo electrónico válido.</span>
-          </div>
-
-          <ion-item lines="inset" class="custom-item">
-            <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
-            <ion-input
-              [type]="showPassword ? 'text' : 'password'"
-              label="Contraseña"
-              labelPlacement="floating"
-              placeholder="••••••••"
-              formControlName="password">
-            </ion-input>
-            <ion-button fill="clear" slot="end" (click)="toggleShowPassword()" type="button">
-              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only" color="medium"></ion-icon>
-            </ion-button>
-          </ion-item>
-          <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error-message">
-            <span *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
-            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres.</span>
-          </div>
-
-          <ion-button expand="block" type="submit" [disabled]="loginForm.invalid" class="ion-margin-top action-btn" color="primary">
-            <ion-icon name="log-in-outline" slot="start"></ion-icon>
-            Ingresar
-          </ion-button>
-        </form>
-
-        <div class="auth-footer ion-text-center ion-margin-top">
-          <p>¿No tienes una cuenta?</p>
-          <ion-button fill="outline" expand="block" routerLink="/register" color="secondary" class="sub-action-btn">
-            <ion-icon name="person-add-outline" slot="start"></ion-icon>
-            Crear cuenta nueva
-          </ion-button>
+        <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="field-error">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo es obligatorio.</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Ingresa un correo electrónico válido.</span>
         </div>
-      </ion-card-content>
-    </ion-card>
+      </div>
+
+      <div class="form-group">
+        <label class="field-label">Contraseña</label>
+        <div class="input-container">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            class="custom-input with-icon"
+            placeholder="Mínimo 6 caracteres"
+            formControlName="password"
+          />
+          <button type="button" class="eye-btn" (click)="toggleShowPassword()">
+            <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
+        <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="field-error">
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
+          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres.</span>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loginForm.invalid">
+        Iniciar sesión
+      </button>
+    </form>
+
+    <!-- Formulario de Teléfono -->
+    <form *ngIf="activeTab === 'phone'" [formGroup]="phoneForm" (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label class="field-label">Número de teléfono</label>
+        <div class="input-container">
+          <input
+            type="tel"
+            class="custom-input"
+            placeholder="+57 300 123 4567"
+            formControlName="phone"
+          />
+        </div>
+        <div *ngIf="phoneForm.get('phone')?.touched && phoneForm.get('phone')?.invalid" class="field-error">
+          <span>Ingresa un número de teléfono válido.</span>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="phoneForm.invalid">
+        Continuar con teléfono
+      </button>
+    </form>
+
+    <!-- Enlace a Registro -->
+    <div class="register-prompt ion-text-center">
+      <span>¿No tienes cuenta? </span>
+      <a routerLink="/register" class="register-link">Regístrate</a>
+    </div>
+
+    <!-- Divisor central -->
+    <div class="custom-divider">
+      <div class="line"></div>
+      <span class="divider-dot">o</span>
+      <div class="line"></div>
+    </div>
+
+    <!-- Tarjeta: Continuar como invitado -->
+    <div class="guest-card" (click)="continueAsGuest()">
+      <div class="guest-icon-badge">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div class="guest-text">
+        <h4 class="guest-title">Continuar como invitado</h4>
+        <p class="guest-subtitle">Explora la app sin registrarte</p>
+      </div>
+      <div class="guest-arrow">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </div>
+    </div>
   </div>
 </ion-content>
