@@ -1,16 +1,46 @@
 <ion-menu contentId="main-content">
   <ion-header>
     <ion-toolbar color="dark">
-      <ion-title>Menu</ion-title>
+      <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">
     <ion-list>
-      <ion-item button><ion-icon name="home-outline"></ion-icon> Inicio</ion-item>
-      <ion-item button><ion-icon name="people"></ion-icon> Empleados</ion-item>
-      <ion-item button><ion-icon name="calculator"></ion-icon> Finanzas</ion-item>
-      <ion-item button><ion-icon name="briefcase"></ion-icon> Proyectos</ion-item>
-      <ion-item button><ion-icon name="heart"></ion-icon> Contacto</ion-item>
+      <ion-item button routerLink="/home"><ion-icon name="home-outline" slot="start"></ion-icon> Inicio</ion-item>
+      <ion-item button><ion-icon name="people-outline" slot="start"></ion-icon> Empleados</ion-item>
+      <ion-item button><ion-icon name="calculator-outline" slot="start"></ion-icon> Finanzas</ion-item>
+      <ion-item button><ion-icon name="briefcase-outline" slot="start"></ion-icon> Proyectos</ion-item>
+      <ion-item button><ion-icon name="mail-outline" slot="start"></ion-icon> Contacto</ion-item>
+
+      <ng-container *ngIf="user$ | async as user; else guestMenu">
+        <ion-item-divider color="light">
+          <ion-label>Usuario Activo</ion-label>
+        </ion-item-divider>
+        <ion-item>
+          <ion-icon name="person-circle" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>{{ user.displayName || 'Usuario' }}</h3>
+            <p>{{ user.email }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item button (click)="logout()" color="danger">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Cerrar Sesión
+        </ion-item>
+      </ng-container>
+      <ng-template #guestMenu>
+        <ion-item-divider color="light">
+          <ion-label>Cuenta</ion-label>
+        </ion-item-divider>
+        <ion-item button routerLink="/login">
+          <ion-icon name="log-in-outline" slot="start" color="primary"></ion-icon>
+          Iniciar Sesión
+        </ion-item>
+        <ion-item button routerLink="/register">
+          <ion-icon name="person-add-outline" slot="start" color="secondary"></ion-icon>
+          Registrarse
+        </ion-item>
+      </ng-template>
     </ion-list>
   </ion-content>
 </ion-menu>
@@ -25,6 +55,18 @@
       <ion-title>
         Empresa App
       </ion-title>
+      <ion-buttons slot="end">
+        <ng-container *ngIf="user$ | async as user; else loginButton">
+          <ion-button (click)="logout()">
+            <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+          </ion-button>
+        </ng-container>
+        <ng-template #loginButton>
+          <ion-button routerLink="/login">
+            <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+          </ion-button>
+        </ng-template>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
