@@ -1,22 +1,35 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
+  getAuth,
   Auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  authState,
+  onAuthStateChanged,
   User,
   sendPasswordResetEmail,
   updateProfile
-} from '@angular/fire/auth';
+} from 'firebase/auth';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private auth: Auth = inject(Auth);
-  readonly authState$: Observable<User | null> = authState(this.auth);
+  private app = !getApps().length ? initializeApp(environment.firebase) : getApp();
+  private auth: Auth = getAuth(this.app);
+
+  readonly authState$: Observable<User | null> = new Observable((subscriber) => {
+    const unsubscribe = onAuthStateChanged(
+      this.auth,
+      (user) => subscriber.next(user),
+      (error) => subscriber.error(error),
+      () => subscriber.complete()
+    );
+    return () => unsubscribe();
+  });
 
   get currentUser(): User | null {
     return this.auth.currentUser;
