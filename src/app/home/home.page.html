@@ -1,132 +1,709 @@
-<ion-menu contentId="main-content">
-  <ion-header>
-    <ion-toolbar color="dark">
-      <ion-title>Menú</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="ion-padding">
-    <ion-list>
-      <ion-item button routerLink="/home"><ion-icon name="home-outline" slot="start"></ion-icon> Inicio</ion-item>
-      <ion-item button><ion-icon name="people-outline" slot="start"></ion-icon> Empleados</ion-item>
-      <ion-item button><ion-icon name="calculator-outline" slot="start"></ion-icon> Finanzas</ion-item>
-      <ion-item button><ion-icon name="briefcase-outline" slot="start"></ion-icon> Proyectos</ion-item>
-      <ion-item button><ion-icon name="mail-outline" slot="start"></ion-icon> Contacto</ion-item>
+<ion-content class="kesj-main-content">
+  <div class="app-screen-container">
 
-      <ng-container *ngIf="user$ | async as user; else guestMenu">
-        <ion-item-divider color="light">
-          <ion-label>Usuario Activo</ion-label>
-        </ion-item-divider>
-        <ion-item>
-          <ion-icon name="person-circle" slot="start" color="primary"></ion-icon>
-          <ion-label>
-            <h3>{{ user.displayName || 'Usuario' }}</h3>
-            <p>{{ user.email }}</p>
-          </ion-label>
-        </ion-item>
-        <ion-item button (click)="logout()" color="danger">
-          <ion-icon name="log-out-outline" slot="start"></ion-icon>
-          Cerrar Sesión
-        </ion-item>
-      </ng-container>
-      <ng-template #guestMenu>
-        <ion-item-divider color="light">
-          <ion-label>Cuenta</ion-label>
-        </ion-item-divider>
-        <ion-item button routerLink="/login">
-          <ion-icon name="log-in-outline" slot="start" color="primary"></ion-icon>
-          Iniciar Sesión
-        </ion-item>
-        <ion-item button routerLink="/register">
-          <ion-icon name="person-add-outline" slot="start" color="secondary"></ion-icon>
-          Registrarse
-        </ion-item>
-      </ng-template>
-    </ion-list>
-  </ion-content>
-</ion-menu>
+    <!-- ==================== PESTAÑA 1: INICIO ==================== -->
+    <section *ngIf="currentTab === 'inicio'" class="tab-view fade-in">
+      <!-- Encabezado superior -->
+      <header class="home-top-header">
+        <div class="header-info">
+          <span class="date-text">{{ currentDateStr | titlecase }}</span>
+          <h1 class="brand-title">KesjApp</h1>
+        </div>
+        <div class="streak-badge" title="Racha actual">
+          <span class="flame-icon">🔥</span>
+          <span class="streak-num">{{ stats.streak }}</span>
+        </div>
+      </header>
 
+      <!-- Tarjeta de Estadísticas de 3 Columnas -->
+      <div class="stats-card">
+        <!-- Columna Hábitos -->
+        <div class="stat-col" (click)="switchTab('habitos')">
+          <div class="stat-icon-wrap icon-blue">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <span class="stat-value">{{ stats.habitsCompletedToday }}/{{ stats.totalHabits }}</span>
+          <span class="stat-label">Hábitos</span>
+        </div>
 
-<div class="ion-page" id="main-content">
-  <ion-header>
-    <ion-toolbar color="dark">
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>
-        Empresa App
-      </ion-title>
-      <ion-buttons slot="end">
-        <ng-container *ngIf="user$ | async as user; else loginButton">
-          <ion-button (click)="logout()">
-            <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
-          </ion-button>
-        </ng-container>
-        <ng-template #loginButton>
-          <ion-button routerLink="/login">
-            <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
-          </ion-button>
-        </ng-template>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+        <div class="stat-divider"></div>
 
-  <ion-content class="ion-padding">
-    <h1>Bienvenido a Empresa App!</h1>
-    <img src="assets/img/empresa.jpg" alt="Imagen de empresa" style="width: 300px; height: auto; margin-bottom: 10px; border-radius: 28px;">
+        <!-- Columna Pendientes -->
+        <div class="stat-col" (click)="switchTab('tareas')">
+          <div class="stat-icon-wrap icon-green">
+            <ion-icon name="checkbox-outline"></ion-icon>
+          </div>
+          <span class="stat-value">{{ stats.pendingTasks }}</span>
+          <span class="stat-label">Pendientes</span>
+        </div>
 
-    <p>
-      Esta aplicación está diseñada para ayudarte a gestionar tu empresa de manera eficiente. Aquí podrás encontrar
-      herramientas para administrar tus empleados, controlar tus finanzas, y mantener un seguimiento de tus proyectos.
-    </p>
+        <div class="stat-divider"></div>
 
-    <h2>Características principales:</h2>
-    <ul>
-      <li>Administración de empleados</li>
-      <li>Control de finanzas</li>
-      <li>Seguimiento de proyectos</li>
-    </ul>
+        <!-- Columna Ánimo -->
+        <div class="stat-col" (click)="switchTab('bienestar')">
+          <div class="stat-icon-wrap icon-yellow">
+            <ion-icon name="pulse-outline"></ion-icon>
+          </div>
+          <span class="stat-value mood-val">{{ getMoodLabel(stats.moodToday) }}</span>
+          <span class="stat-label">Ánimo</span>
+        </div>
+      </div>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Administración de empleados</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        Gestiona la información de tus empleados, asigna tareas y controla su desempeño.
-      </ion-card-content>
-    </ion-card>
+      <!-- Sección Hábitos de hoy -->
+      <div class="section-block">
+        <div class="section-header">
+          <h2 class="section-title">Hábitos de hoy</h2>
+          <button class="section-link-btn" (click)="switchTab('habitos')">
+            Ver todos <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Control de finanzas</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Lleva un control detallado de tus ingresos y gastos, y genera reportes financieros para tu empresa.
-    </ion-card-content>
-  </ion-card>
+        <!-- Estado vacío Hábitos -->
+        <div *ngIf="habits.length === 0" class="empty-card">
+          <p class="empty-text">No tienes hábitos aún</p>
+          <button class="primary-text-btn" (click)="openHabitModal()">Crear el primero</button>
+        </div>
 
+        <!-- Lista de Hábitos rápida -->
+        <div *ngIf="habits.length > 0" class="items-list">
+          <div 
+            *ngFor="let habit of habits" 
+            class="habit-mini-item"
+            [class.completed]="isHabitCompletedToday(habit)"
+          >
+            <button 
+              class="check-circle-btn" 
+              [style.background-color]="isHabitCompletedToday(habit) ? habit.color : 'transparent'"
+              [style.border-color]="habit.color"
+              (click)="toggleHabit(habit.id)"
+            >
+              <ion-icon *ngIf="isHabitCompletedToday(habit)" name="checkmark"></ion-icon>
+            </button>
 
-    <h3>Contacto</h3>
-    <p>
-      Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos a través de nuestro correo electrónico:
-      <a href="mailto:info@empresaapp.com">
-        info@empresaapp.com
-      </a>
-    </p>
+            <div class="item-content" (click)="toggleHabit(habit.id)">
+              <div class="item-title-row">
+                <span class="item-title" [class.line-through]="isHabitCompletedToday(habit)">
+                  {{ habit.name }}
+                </span>
+                <span *ngIf="habit.streak > 0" class="item-streak">
+                  🔥 {{ habit.streak }}
+                </span>
+              </div>
+              <span *ngIf="habit.description" class="item-sub">
+                {{ habit.description }}
+              </span>
+            </div>
 
-    <ion-button expand="block" color="primary">
-      <ion-icon name="logo-facebook"></ion-icon>
-      Facebook
-    </ion-button>
-        <ion-button expand="block" color="danger">
-      <ion-icon name="logo-instagram"></ion-icon>
-      Instagram
-    </ion-button>
-  </ion-content>
+            <div class="item-color-pill" [style.background-color]="habit.color"></div>
+          </div>
+        </div>
+      </div>
 
-  <ion-footer>
-    <ion-toolbar color="dark">
-      <ion-title>&copy; 2026 Empresa App. Todos los derechos reservados.</ion-title>
-    </ion-toolbar>
-  </ion-footer>
+      <!-- Sección Tareas -->
+      <div class="section-block">
+        <div class="section-header">
+          <h2 class="section-title">Tareas</h2>
+          <button class="section-link-btn" (click)="switchTab('tareas')">
+            Ver todas <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
 
+        <!-- Estado vacío Tareas -->
+        <div *ngIf="tasks.length === 0" class="empty-card">
+          <p class="empty-text">No tienes tareas aún</p>
+          <button class="primary-text-btn" (click)="openTaskModal()">Crear la primera</button>
+        </div>
+
+        <!-- Lista de Tareas rápida -->
+        <div *ngIf="tasks.length > 0" class="items-list">
+          <div 
+            *ngFor="let task of tasks.slice(0, 3)" 
+            class="task-mini-item"
+            [class.completed]="task.completed"
+          >
+            <button 
+              class="square-check-btn" 
+              [class.checked]="task.completed"
+              (click)="toggleTask(task.id)"
+            >
+              <ion-icon *ngIf="task.completed" name="checkmark"></ion-icon>
+            </button>
+
+            <div class="item-content" (click)="toggleTask(task.id)">
+              <span class="item-title" [class.line-through]="task.completed">
+                {{ task.title }}
+              </span>
+              <span *ngIf="task.description" class="item-sub">
+                {{ task.description }}
+              </span>
+            </div>
+
+            <span class="priority-badge" [attr.data-priority]="task.priority">
+              {{ task.priority | titlecase }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección ¿Cómo te sientes hoy? -->
+      <div class="section-block mood-section">
+        <h2 class="section-title">¿Cómo te sientes hoy?</h2>
+        <div class="mood-container">
+          <div 
+            *ngFor="let opt of moodOptions" 
+            class="mood-btn"
+            [class.active]="stats.moodToday === opt.type"
+            (click)="selectMood(opt.type)"
+          >
+            <span class="mood-emoji">{{ opt.emoji }}</span>
+            <span class="mood-text">{{ opt.label }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PESTAÑA 2: HÁBITOS ==================== -->
+    <section *ngIf="currentTab === 'habitos'" class="tab-view fade-in">
+      <header class="page-header">
+        <h1 class="page-title">Hábitos</h1>
+        <p class="page-subtitle">Construye rutinas que duren</p>
+      </header>
+
+      <!-- Estado vacío Hábitos (Imagen 3) -->
+      <div *ngIf="habits.length === 0" class="screen-empty-state">
+        <div class="empty-icon-circle icon-blue">
+          <ion-icon name="checkmark-outline"></ion-icon>
+        </div>
+        <h3 class="screen-empty-title">Sin hábitos todavía</h3>
+        <p class="screen-empty-desc">
+          Crea tu primer hábito y empieza a construir una rutina diaria.
+        </p>
+        <button class="gradient-pill-btn" (click)="openHabitModal()">
+          <ion-icon name="add-outline"></ion-icon> Crear Hábito
+        </button>
+      </div>
+
+      <!-- Lista completa de Hábitos -->
+      <div *ngIf="habits.length > 0" class="full-list">
+        <div 
+          *ngFor="let habit of habits" 
+          class="habit-full-card"
+          [class.completed]="isHabitCompletedToday(habit)"
+        >
+          <button 
+            class="habit-toggle-btn"
+            [style.background-color]="isHabitCompletedToday(habit) ? habit.color : 'transparent'"
+            [style.border-color]="habit.color"
+            (click)="toggleHabit(habit.id)"
+          >
+            <ion-icon *ngIf="isHabitCompletedToday(habit)" name="checkmark"></ion-icon>
+          </button>
+
+          <div class="habit-details" (click)="toggleHabit(habit.id)">
+            <div class="habit-main-row">
+              <span class="habit-name" [class.line-through]="isHabitCompletedToday(habit)">
+                {{ habit.name }}
+              </span>
+              <span class="streak-tag">
+                🔥 {{ habit.streak }} {{ habit.streak === 1 ? 'día' : 'días' }}
+              </span>
+            </div>
+
+            <p *ngIf="habit.description" class="habit-desc">
+              {{ habit.description }}
+            </p>
+
+            <div class="habit-meta-row">
+              <span class="freq-tag">
+                {{ habit.frequency === 'diario' ? 'Diario' : 'Semanal' }}
+              </span>
+              <span class="habit-icon-pill" [style.background-color]="habit.color + '22'" [style.color]="habit.color">
+                <ion-icon [name]="habit.icon"></ion-icon>
+              </span>
+            </div>
+          </div>
+
+          <button class="delete-icon-btn" (click)="deleteHabit(habit.id)" title="Eliminar hábito">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón Flotante FAB (+) -->
+      <button class="kesj-fab" (click)="openHabitModal()" title="Nuevo Hábito">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </section>
+
+    <!-- ==================== PESTAÑA 3: TAREAS ==================== -->
+    <section *ngIf="currentTab === 'tareas'" class="tab-view fade-in">
+      <header class="page-header">
+        <h1 class="page-title">Tareas</h1>
+        <p class="page-subtitle">
+          {{ stats.pendingTasks }} pendientes · {{ stats.completedTasks }} completadas
+        </p>
+      </header>
+
+      <!-- Segmentos de filtro tipo pastilla -->
+      <div class="filter-segment">
+        <button 
+          class="filter-tab-btn" 
+          [class.active]="taskFilter === 'pendientes'"
+          (click)="taskFilter = 'pendientes'"
+        >
+          Pendientes
+        </button>
+        <button 
+          class="filter-tab-btn" 
+          [class.active]="taskFilter === 'completadas'"
+          (click)="taskFilter = 'completadas'"
+        >
+          Completadas
+        </button>
+        <button 
+          class="filter-tab-btn" 
+          [class.active]="taskFilter === 'todas'"
+          (click)="taskFilter = 'todas'"
+        >
+          Todas
+        </button>
+      </div>
+
+      <!-- Estado vacío Tareas (Imagen 5) -->
+      <div *ngIf="filteredTasks.length === 0" class="screen-empty-state">
+        <div class="empty-icon-circle icon-green">
+          <ion-icon name="checkbox-outline"></ion-icon>
+        </div>
+        <h3 class="screen-empty-title">Sin tareas</h3>
+        <p class="screen-empty-desc">
+          Crea una tarea para empezar a organizarte.
+        </p>
+        <button class="gradient-pill-btn" (click)="openTaskModal()">
+          <ion-icon name="add-outline"></ion-icon> Crear Tarea
+        </button>
+      </div>
+
+      <!-- Lista completa de Tareas -->
+      <div *ngIf="filteredTasks.length > 0" class="full-list">
+        <div 
+          *ngFor="let task of filteredTasks" 
+          class="task-full-card"
+          [class.completed]="task.completed"
+        >
+          <button 
+            class="square-check-btn" 
+            [class.checked]="task.completed"
+            (click)="toggleTask(task.id)"
+          >
+            <ion-icon *ngIf="task.completed" name="checkmark"></ion-icon>
+          </button>
+
+          <div class="task-details" (click)="toggleTask(task.id)">
+            <span class="task-title" [class.line-through]="task.completed">
+              {{ task.title }}
+            </span>
+            <p *ngIf="task.description" class="task-desc">
+              {{ task.description }}
+            </p>
+            <div class="task-footer-row">
+              <span class="priority-badge" [attr.data-priority]="task.priority">
+                Prioridad {{ task.priority }}
+              </span>
+              <span *ngIf="task.dueDate" class="due-tag">
+                📅 {{ task.dueDate }}
+              </span>
+            </div>
+          </div>
+
+          <button class="delete-icon-btn" (click)="deleteTask(task.id)" title="Eliminar tarea">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón Flotante FAB (+) -->
+      <button class="kesj-fab" (click)="openTaskModal()" title="Nueva Tarea">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </section>
+
+    <!-- ==================== PESTAÑA 4: BIENESTAR ==================== -->
+    <section *ngIf="currentTab === 'bienestar'" class="tab-view fade-in">
+      <header class="page-header">
+        <h1 class="page-title">Bienestar</h1>
+        <p class="page-subtitle">Monitorea tu salud mental y física</p>
+      </header>
+
+      <!-- Estado de ánimo actual -->
+      <div class="wellness-card">
+        <div class="card-header-row">
+          <div class="wellness-icon-badge icon-yellow">
+            <ion-icon name="happy-outline"></ion-icon>
+          </div>
+          <div>
+            <h3 class="wellness-title">Estado de ánimo de hoy</h3>
+            <p class="wellness-sub">¿Cómo te sientes en este momento?</p>
+          </div>
+        </div>
+
+        <div class="mood-container wellness-mood-grid">
+          <div 
+            *ngFor="let opt of moodOptions" 
+            class="mood-btn"
+            [class.active]="stats.moodToday === opt.type"
+            (click)="selectMood(opt.type)"
+          >
+            <span class="mood-emoji">{{ opt.emoji }}</span>
+            <span class="mood-text">{{ opt.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracker de Hidratación -->
+      <div class="wellness-card">
+        <div class="card-header-row">
+          <div class="wellness-icon-badge icon-blue">
+            <ion-icon name="water-outline"></ion-icon>
+          </div>
+          <div>
+            <h3 class="wellness-title">Hidratación diaria</h3>
+            <p class="wellness-sub">Meta recomendada: 8 vasos al día</p>
+          </div>
+        </div>
+
+        <div class="water-tracker-row">
+          <div class="water-counter">
+            <span class="water-number">{{ wellness.waterGlasses }}</span>
+            <span class="water-max">/ {{ wellness.waterGoal }} vasos</span>
+          </div>
+
+          <div class="water-actions">
+            <button class="circle-action-btn" (click)="changeWater(-1)" [disabled]="wellness.waterGlasses <= 0">
+              <ion-icon name="remove"></ion-icon>
+            </button>
+            <button class="circle-action-btn add-btn" (click)="changeWater(1)">
+              <ion-icon name="add"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Visualización de vasos -->
+        <div class="water-glasses-row">
+          <span 
+            *ngFor="let item of [1,2,3,4,5,6,7,8]; let i = index" 
+            class="glass-icon"
+            [class.filled]="i < wellness.waterGlasses"
+          >
+            💧
+          </span>
+        </div>
+      </div>
+
+      <!-- Reflexión o Agradecimiento diario -->
+      <div class="wellness-card">
+        <div class="card-header-row">
+          <div class="wellness-icon-badge icon-green">
+            <ion-icon name="heart-outline"></ion-icon>
+          </div>
+          <div>
+            <h3 class="wellness-title">Agradecimiento del día</h3>
+            <p class="wellness-sub">Escribe algo positivo que ocurrió hoy</p>
+          </div>
+        </div>
+
+        <div class="gratitude-input-wrap">
+          <textarea 
+            [(ngModel)]="gratitudeText" 
+            placeholder="Hoy me sentí agradecido por..."
+            rows="3"
+            class="gratitude-textarea"
+          ></textarea>
+          <button class="save-gratitude-btn" (click)="saveGratitude()">
+            Guardar reflexión
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PESTAÑA 5: AJUSTES ==================== -->
+    <section *ngIf="currentTab === 'ajustes'" class="tab-view fade-in">
+      <header class="page-header">
+        <h1 class="page-title">Ajustes</h1>
+        <p class="page-subtitle">Configuración de tu cuenta y preferencias</p>
+      </header>
+
+      <!-- Perfil de usuario -->
+      <div class="settings-card user-profile-card">
+        <div class="user-avatar-circle">
+          <ion-icon name="person"></ion-icon>
+        </div>
+        <div class="user-info-text">
+          <ng-container *ngIf="user$ | async as u; else guestProfile">
+            <h3 class="profile-name">{{ u.displayName || 'Usuario KesjApp' }}</h3>
+            <p class="profile-email">{{ u.email }}</p>
+            <span class="auth-status-badge active">Cuenta Conectada</span>
+          </ng-container>
+          <ng-template #guestProfile>
+            <h3 class="profile-name">Modo Invitado</h3>
+            <p class="profile-email">Tus datos se guardan en este dispositivo</p>
+            <button class="link-action-btn" routerLink="/login">Iniciar sesión / Registrarse</button>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Herramientas de Datos -->
+      <div class="settings-card">
+        <h4 class="settings-section-title">Gestión de Datos</h4>
+
+        <div class="settings-action-row" (click)="loadDemoData()">
+          <div class="settings-row-icon icon-blue">
+            <ion-icon name="sparkles-outline"></ion-icon>
+          </div>
+          <div class="settings-row-info">
+            <span class="settings-row-title">Cargar datos de prueba</span>
+            <span class="settings-row-sub">Agrega hábitos y tareas para ver la app en acción</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="settings-arrow"></ion-icon>
+        </div>
+
+        <div class="settings-action-row danger" (click)="resetAllData()">
+          <div class="settings-row-icon icon-red">
+            <ion-icon name="trash-outline"></ion-icon>
+          </div>
+          <div class="settings-row-info">
+            <span class="settings-row-title">Restablecer datos</span>
+            <span class="settings-row-sub">Borrar todos los hábitos y tareas locales</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="settings-arrow"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Información de la App -->
+      <div class="settings-card">
+        <h4 class="settings-section-title">Acerca de</h4>
+        <div class="app-info-block">
+          <span class="app-name-tag">KesjApp v0.0.1</span>
+          <p class="app-tagline">Organiza tu vida diaria con hábitos y tareas.</p>
+        </div>
+      </div>
+
+      <!-- Cerrar Sesión -->
+      <button class="logout-full-btn" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon> Cerrar Sesión
+      </button>
+    </section>
+
+  </div>
+</ion-content>
+
+<!-- ==================== BARRA INFERIOR DE NAVEGACIÓN (TABS) ==================== -->
+<div class="bottom-nav-bar">
+  <button 
+    class="nav-tab-btn" 
+    [class.active]="currentTab === 'inicio'"
+    (click)="switchTab('inicio')"
+  >
+    <ion-icon [name]="currentTab === 'inicio' ? 'home' : 'home-outline'"></ion-icon>
+    <span class="tab-text">Inicio</span>
+  </button>
+
+  <button 
+    class="nav-tab-btn" 
+    [class.active]="currentTab === 'habitos'"
+    (click)="switchTab('habitos')"
+  >
+    <ion-icon [name]="currentTab === 'habitos' ? 'checkmark-circle' : 'checkmark-circle-outline'"></ion-icon>
+    <span class="tab-text">Hábitos</span>
+  </button>
+
+  <button 
+    class="nav-tab-btn" 
+    [class.active]="currentTab === 'tareas'"
+    (click)="switchTab('tareas')"
+  >
+    <ion-icon [name]="currentTab === 'tareas' ? 'checkbox' : 'checkbox-outline'"></ion-icon>
+    <span class="tab-text">Tareas</span>
+  </button>
+
+  <button 
+    class="nav-tab-btn" 
+    [class.active]="currentTab === 'bienestar'"
+    (click)="switchTab('bienestar')"
+  >
+    <ion-icon [name]="currentTab === 'bienestar' ? 'heart' : 'heart-outline'"></ion-icon>
+    <span class="tab-text">Bienestar</span>
+  </button>
+
+  <button 
+    class="nav-tab-btn" 
+    [class.active]="currentTab === 'ajustes'"
+    (click)="switchTab('ajustes')"
+  >
+    <ion-icon [name]="currentTab === 'ajustes' ? 'settings' : 'settings-outline'"></ion-icon>
+    <span class="tab-text">Ajustes</span>
+  </button>
+</div>
+
+<!-- ==================== MODAL: NUEVO HÁBITO (IMAGEN 4) ==================== -->
+<div *ngIf="isHabitModalOpen" class="modal-overlay" (click)="closeHabitModal()">
+  <div class="modal-sheet" (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <h2 class="modal-title">Nuevo hábito</h2>
+      <button class="modal-close-btn" (click)="closeHabitModal()">✕</button>
+    </header>
+
+    <div class="modal-body">
+      <!-- Nombre -->
+      <div class="form-group">
+        <label class="form-label">Nombre</label>
+        <input 
+          type="text" 
+          [(ngModel)]="habitForm.name" 
+          placeholder="Ej. Beber agua" 
+          class="modal-input"
+        />
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label">Descripción (opcional)</label>
+        <input 
+          type="text" 
+          [(ngModel)]="habitForm.description" 
+          placeholder="Detalles del hábito" 
+          class="modal-input"
+        />
+      </div>
+
+      <!-- Frecuencia -->
+      <div class="form-group">
+        <label class="form-label">Frecuencia</label>
+        <div class="segmented-pills">
+          <button 
+            type="button" 
+            class="pill-btn" 
+            [class.active]="habitForm.frequency === 'diario'"
+            (click)="habitForm.frequency = 'diario'"
+          >
+            Diario
+          </button>
+          <button 
+            type="button" 
+            class="pill-btn" 
+            [class.active]="habitForm.frequency === 'semanal'"
+            (click)="habitForm.frequency = 'semanal'"
+          >
+            Semanal
+          </button>
+        </div>
+      </div>
+
+      <!-- Color Swatches (10 colores idénticos a Imagen 4) -->
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-palette-row">
+          <button 
+            *ngFor="let col of colorPalette" 
+            type="button" 
+            class="color-swatch-btn"
+            [style.background-color]="col"
+            [class.selected]="habitForm.color === col"
+            (click)="habitForm.color = col"
+          >
+            <ion-icon *ngIf="habitForm.color === col" name="checkmark"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Iconos (Cuadrícula seleccionable) -->
+      <div class="form-group">
+        <label class="form-label">Icono</label>
+        <div class="icons-grid">
+          <button 
+            *ngFor="let ic of iconOptions" 
+            type="button" 
+            class="icon-grid-btn"
+            [class.selected]="habitForm.icon === ic"
+            (click)="habitForm.icon = ic"
+          >
+            <ion-icon [name]="ic"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="modal-footer">
+      <button class="submit-pill-btn" (click)="saveHabit()">
+        Guardar hábito
+      </button>
+    </footer>
+  </div>
+</div>
+
+<!-- ==================== MODAL: NUEVA TAREA ==================== -->
+<div *ngIf="isTaskModalOpen" class="modal-overlay" (click)="closeTaskModal()">
+  <div class="modal-sheet" (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <h2 class="modal-title">Nueva tarea</h2>
+      <button class="modal-close-btn" (click)="closeTaskModal()">✕</button>
+    </header>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Título</label>
+        <input 
+          type="text" 
+          [(ngModel)]="taskForm.title" 
+          placeholder="Ej. Revisar correo semanal" 
+          class="modal-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Descripción (opcional)</label>
+        <input 
+          type="text" 
+          [(ngModel)]="taskForm.description" 
+          placeholder="Detalles adicionales" 
+          class="modal-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Prioridad</label>
+        <div class="segmented-pills">
+          <button 
+            type="button" 
+            class="pill-btn" 
+            [class.active]="taskForm.priority === 'baja'"
+            (click)="taskForm.priority = 'baja'"
+          >
+            Baja
+          </button>
+          <button 
+            type="button" 
+            class="pill-btn" 
+            [class.active]="taskForm.priority === 'media'"
+            (click)="taskForm.priority = 'media'"
+          >
+            Media
+          </button>
+          <button 
+            type="button" 
+            class="pill-btn" 
+            [class.active]="taskForm.priority === 'alta'"
+            (click)="taskForm.priority = 'alta'"
+          >
+            Alta
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="modal-footer">
+      <button class="submit-pill-btn" (click)="saveTask()">
+        Guardar tarea
+      </button>
+    </footer>
+  </div>
 </div>
