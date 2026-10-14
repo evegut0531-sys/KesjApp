@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  geminiApiKey: 'TU_API_KEY_AQUI',
   firebase: {
     apiKey: 'AIzaSyExampleKeyReplaceWithYours',
     authDomain: 'tu-proyecto.firebaseapp.com',
@@ -9,4 +10,3 @@ export const environment = {
     appId: '1:000000000000:web:abcdef123456',
   },
 };
-

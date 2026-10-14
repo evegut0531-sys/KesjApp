@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { AiChatService } from '../../services/ai-chat.service';
-import { ChatMessage } from '../../models/chat.model';
+import { AiChatService } from '../services/ai.chat.service';
+import { ChatMessage } from '../models/chat.model';
 
 @Component({
-  selector: 'app-bicibot',
-  templateUrl: './bicibot.component.html',
-  styleUrls: ['./bicibot.component.scss'],
+  selector: 'app-habibot',
+  templateUrl: './habibot.component.html',
+  styleUrls: ['./habibot.component.scss'],
   standalone: false
 })
-export class BicibotComponent implements OnInit {
+export class HabibotComponent implements OnInit {
   @ViewChild('chatBody') chatBodyRef!: ElementRef;
 
   isChatOpen: boolean = false;
@@ -17,11 +17,12 @@ export class BicibotComponent implements OnInit {
   isChatLoading: boolean = false;
 
   chatSuggestions: string[] = [
-    '¿Rutas seguras? 🗺️',
-    'Seguridad vial 🪖',
-    'Mantenimiento 🔧',
-    'Reportar peligro ⚠️',
-    'Eventos 🎉'
+    '💧 ¿Cuánta agua tomar?',
+    '📋 ¿Cómo crear un hábito?',
+    '✅ Organizar mis tareas',
+    '😊 Registrar mi ánimo',
+    '🔑 Ayuda con inicio de sesión',
+    '✨ Consejos para mi día'
   ];
 
   constructor(private aiChatService: AiChatService) {}
@@ -29,6 +30,7 @@ export class BicibotComponent implements OnInit {
   ngOnInit(): void {
     this.chatMessages = this.aiChatService.getConversationHistory();
   }
+
   /** Abre/cierra el panel flotante de chat */
   toggleChat(): void {
     this.isChatOpen = !this.isChatOpen;
@@ -38,7 +40,7 @@ export class BicibotComponent implements OnInit {
     }
   }
 
-  /** Envía un mensaje al BiciBot */
+  /** Envía un mensaje a Habibot */
   sendChatMessage(): void {
     const text = this.chatInput?.trim();
     if (!text || this.isChatLoading) return;
@@ -54,7 +56,8 @@ export class BicibotComponent implements OnInit {
     this.chatInput = '';
     this.scrollChatToBottom();
     this.isChatLoading = true;
-    // Enviar a la IA (Google Gemini o respuestas locales)
+
+    // Enviar a la IA (Google Gemini o respuestas inteligentes locales de KesjApp)
     this.aiChatService.sendMessage(text).subscribe({
       next: () => {
         this.chatMessages = this.aiChatService.getConversationHistory();
@@ -66,14 +69,16 @@ export class BicibotComponent implements OnInit {
         const errorMsg: ChatMessage = {
           id: 'err_' + Date.now(),
           role: 'assistant',
-          content: '❌ Error al procesar tu solicitud. Intenta de nuevo.',
+          content: '❌ Lo siento, ocurrió un error al responder. Por favor intenta de nuevo.',
           timestamp: new Date()
         };
         this.chatMessages.push(errorMsg);
         this.scrollChatToBottom();
       }
     });
-  }/** Envía una sugerencia rápida */
+  }
+
+  /** Envía una sugerencia rápida */
   sendChatFromSuggestion(suggestion: string): void {
     this.chatInput = suggestion;
     this.sendChatMessage();
