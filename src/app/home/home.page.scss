@@ -1046,7 +1046,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 66px;
+  height: calc(66px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
   background: #ffffff;
   border-top: 1px solid #edf0f6;
   display: flex;
@@ -1056,7 +1058,7 @@
   max-width: 500px;
   margin: 0 auto;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.03);
-
+}
   .nav-tab-btn {
     flex: 1;
     height: 100%;
@@ -1093,7 +1095,6 @@
       }
     }
   }
-}
 
 /* ==========================================================================
    MODALES (IMAGEN 4)
