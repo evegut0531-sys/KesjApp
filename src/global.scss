@@ -35,3 +35,20 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+/* Ajustes de pantalla y zona segura */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+ion-app {
+  min-height: 100%;
+}
+
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+}
