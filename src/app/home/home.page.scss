@@ -1,12 +1,14 @@
-.kesj-main-content {
+  .kesj-main-content {
   --background: #f8fafc;
 }
 
 .app-screen-container {
+  width: 100%;
   max-width: 500px;
   margin: 0 auto;
-  padding: 1.25rem 1rem 6rem 1rem;
+  padding: 1rem;
   min-height: 100%;
+  box-sizing: border-box;
 }
 
 /* Animación de entrada para pestañas */

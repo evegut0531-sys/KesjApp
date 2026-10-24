@@ -1,15 +1,19 @@
 .login-content {
   --background: #ffffff;
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
 .login-wrapper {
+  width: 100%;
   max-width: 400px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  padding: 1rem 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  justify-content: center;
+  box-sizing: border-box;
+  justify-content: flex-start;
 }
 
 /* Insignia / Ícono superior */
